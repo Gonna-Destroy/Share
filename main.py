@@ -1,15 +1,18 @@
 import time
 import tkinter
-from yt_dlp import YoutubeDL
-import importlib
 import pickle
 from tkinter import Entry
 import re
 import os
-from tkinter import font
+from tkinter import font, Frame, Button
 
 file_cache = 'cache.pkl'
 DIRECTORY = ''
+
+def skip(body: tkinter.Frame, main: tkinter.Frame, button: tkinter.Button):
+    body.destroy()
+    button.destroy()
+    main.pack()
 
 def messageGreen(message: tkinter.Label, text: str = 'Succes!\nThis path saved in the cache.'):
     message.configure(fg='#00e50b')
@@ -52,15 +55,15 @@ def get_directory(entry: Entry,  message: tkinter.Label, start: tkinter.Button, 
     global DIRECTORY
     DIRECTORY = entry.get()
     if create_cache(message):
-        start.place(x=253, y=550)
+        start.pack(pady=10)
 
-def start_program(root: tkinter.Tk, message: tkinter.Label, button: tkinter.Button):
+def start_program(root: tkinter.Tk, message: tkinter.Label,  main: tkinter.Frame,button: tkinter.Button):
     button.destroy()
     with open(file_cache, 'rb') as file:
         path = pickle.load(file)
         data = path.get('path')
         if os.path.isdir(data):
-            message.configure(text=f'Your path: {data}\nWelcome!')
+            message.configure(text=f'Your path: {data[:10]}...\nWelcome!')
             message.update()
             timer = tkinter.Label(
                 root,
@@ -68,11 +71,13 @@ def start_program(root: tkinter.Tk, message: tkinter.Label, button: tkinter.Butt
             messageGreen(timer, text='3')
             custom_font = font.Font(family='Helvetica', size=22, weight='bold')
             timer.configure(font=custom_font, bg='gray', fg='magenta')
-            timer.place(x=286, y=470)
+            timer.place(x=286, y=350)
             for i in range(3,0,-1):
                 timer.configure(text=f'{i}')
                 timer.update()
                 time.sleep(1)
+            root.destroy()
+            main.pack()
         else: messageRed(message, text='Path incorrect!')
 
 
